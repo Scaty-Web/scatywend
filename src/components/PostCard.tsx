@@ -14,6 +14,7 @@ interface PostCardProps {
     content: string;
     created_at: string;
     user_id: string;
+    image_url?: string | null;
     profiles: { username: string; display_name: string | null; avatar_url: string | null } | null;
   };
   likeCount: number;
@@ -42,13 +43,19 @@ const PostCard = ({ post, likeCount, isLiked, onRefresh }: PostCardProps) => {
     onRefresh();
   };
 
+  const avatarUrl = post.profiles?.avatar_url;
+
   return (
     <div className="p-4 border-b border-border hover:bg-secondary/30 transition-colors">
       <div className="flex gap-3">
         <Link to={`/profile/${post.profiles?.username}`}>
-          <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground font-display font-bold text-sm shrink-0">
-            {(post.profiles?.display_name || post.profiles?.username || "?")[0].toUpperCase()}
-          </div>
+          {avatarUrl ? (
+            <img src={avatarUrl} alt="" className="w-10 h-10 rounded-full object-cover shrink-0" />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground font-display font-bold text-sm shrink-0">
+              {(post.profiles?.display_name || post.profiles?.username || "?")[0].toUpperCase()}
+            </div>
+          )}
         </Link>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -60,7 +67,10 @@ const PostCard = ({ post, likeCount, isLiked, onRefresh }: PostCardProps) => {
               · {formatDistanceToNow(new Date(post.created_at), { locale: tr, addSuffix: true })}
             </span>
           </div>
-          <p className="text-foreground mt-1 whitespace-pre-wrap break-words">{post.content}</p>
+          {post.content && <p className="text-foreground mt-1 whitespace-pre-wrap break-words">{post.content}</p>}
+          {post.image_url && (
+            <img src={post.image_url} alt="" className="mt-2 rounded-xl border border-border max-h-96 w-auto" />
+          )}
           <div className="flex items-center gap-4 mt-3">
             <button onClick={toggleLike} className={`flex items-center gap-1 text-sm transition-colors ${isLiked ? "text-primary" : "text-muted-foreground hover:text-primary"}`}>
               <Heart size={16} fill={isLiked ? "currentColor" : "none"} />
@@ -80,12 +90,7 @@ const PostCard = ({ post, likeCount, isLiked, onRefresh }: PostCardProps) => {
         </div>
       </div>
       {reportOpen && (
-        <ReportDialog
-          open={reportOpen}
-          onClose={() => setReportOpen(false)}
-          reportedPostId={post.id}
-          reportedUserId={post.user_id}
-        />
+        <ReportDialog open={reportOpen} onClose={() => setReportOpen(false)} reportedPostId={post.id} reportedUserId={post.user_id} />
       )}
     </div>
   );
