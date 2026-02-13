@@ -81,9 +81,13 @@ const Profile = () => {
         <div className="h-32 bg-gradient-primary" />
         <div className="px-4 pb-4">
           <div className="flex justify-between items-end -mt-8">
-            <div className="w-20 h-20 rounded-full bg-card border-4 border-background flex items-center justify-center text-2xl font-display font-bold text-gradient">
-              {(profile.display_name || profile.username)[0].toUpperCase()}
-            </div>
+            {profile.avatar_url ? (
+              <img src={profile.avatar_url} alt="" className="w-20 h-20 rounded-full object-cover border-4 border-background" />
+            ) : (
+              <div className="w-20 h-20 rounded-full bg-card border-4 border-background flex items-center justify-center text-2xl font-display font-bold text-gradient">
+                {(profile.display_name || profile.username)[0].toUpperCase()}
+              </div>
+            )}
             <div className="flex gap-2 mt-2">
               {!isOwn && user && (
                 <>
