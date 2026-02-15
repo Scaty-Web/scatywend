@@ -3,16 +3,19 @@ import { Home, User, Settings, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { signOut } from "@/lib/auth";
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "@/hooks/useLanguage";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const Sidebar = () => {
   const { profile } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const links = [
-    { to: "/home", icon: Home, label: "Ana Sayfa" },
-    { to: `/profile/${profile?.username}`, icon: User, label: "Profil" },
-    { to: "/settings", icon: Settings, label: "Ayarlar" },
+    { to: "/home", icon: Home, label: t("home") },
+    { to: `/profile/${profile?.username}`, icon: User, label: t("profile") },
+    { to: "/settings", icon: Settings, label: t("settings") },
   ];
 
   const handleLogout = async () => {
@@ -43,13 +46,16 @@ const Sidebar = () => {
         ))}
       </nav>
 
-      <button
-        onClick={handleLogout}
-        className="flex items-center gap-3 px-4 py-3 rounded-lg font-display text-muted-foreground hover:bg-secondary hover:text-destructive transition-colors"
-      >
-        <LogOut size={20} />
-        Çıkış Yap
-      </button>
+      <div className="flex flex-col gap-1">
+        <LanguageSwitcher />
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-4 py-3 rounded-lg font-display text-muted-foreground hover:bg-secondary hover:text-destructive transition-colors"
+        >
+          <LogOut size={20} />
+          {t("logout")}
+        </button>
+      </div>
     </div>
   );
 };

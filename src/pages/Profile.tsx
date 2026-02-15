@@ -6,10 +6,12 @@ import AppLayout from "@/components/AppLayout";
 import PostCard from "@/components/PostCard";
 import ReportDialog from "@/components/ReportDialog";
 import { Flag } from "lucide-react";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const Profile = () => {
   const { username } = useParams<{ username: string }>();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [profile, setProfile] = useState<any>(null);
   const [posts, setPosts] = useState<any[]>([]);
   const [likes, setLikes] = useState<any[]>([]);
@@ -67,7 +69,7 @@ const Profile = () => {
   if (!profile) {
     return (
       <AppLayout>
-        <div className="p-8 text-center text-muted-foreground">Kullanıcı bulunamadı</div>
+        <div className="p-8 text-center text-muted-foreground">{t("userNotFound")}</div>
       </AppLayout>
     );
   }
@@ -77,7 +79,6 @@ const Profile = () => {
   return (
     <AppLayout>
       <div className="border-b border-border">
-        {/* Banner */}
         <div className="h-32 bg-gradient-primary" />
         <div className="px-4 pb-4">
           <div className="flex justify-between items-end -mt-8">
@@ -102,7 +103,7 @@ const Profile = () => {
                         : "bg-gradient-primary text-primary-foreground hover:opacity-90"
                     }`}
                   >
-                    {isFollowing ? "Takipten Çık" : "Takip Et"}
+                    {isFollowing ? t("unfollow") : t("follow")}
                   </button>
                 </>
               )}
@@ -113,8 +114,8 @@ const Profile = () => {
             <p className="text-muted-foreground text-sm">@{profile.username}</p>
             {profile.bio && <p className="text-foreground mt-2">{profile.bio}</p>}
             <div className="flex gap-4 mt-3 text-sm">
-              <span><strong className="text-foreground">{followingCount}</strong> <span className="text-muted-foreground">Takip</span></span>
-              <span><strong className="text-foreground">{followerCount}</strong> <span className="text-muted-foreground">Takipçi</span></span>
+              <span><strong className="text-foreground">{followingCount}</strong> <span className="text-muted-foreground">{t("following")}</span></span>
+              <span><strong className="text-foreground">{followerCount}</strong> <span className="text-muted-foreground">{t("followers")}</span></span>
             </div>
           </div>
         </div>
@@ -130,7 +131,7 @@ const Profile = () => {
         />
       ))}
       {posts.length === 0 && (
-        <div className="p-8 text-center text-muted-foreground">Henüz gönderi yok</div>
+        <div className="p-8 text-center text-muted-foreground">{t("noPostsYet")}</div>
       )}
 
       {reportOpen && (

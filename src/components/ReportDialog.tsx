@@ -2,6 +2,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface ReportDialogProps {
   open: boolean;
@@ -12,6 +13,7 @@ interface ReportDialogProps {
 
 const ReportDialog = ({ open, onClose, reportedPostId, reportedUserId }: ReportDialogProps) => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -27,10 +29,10 @@ const ReportDialog = ({ open, onClose, reportedPostId, reportedUserId }: ReportD
         reported_user_id: reportedUserId || null,
         reason: reason.trim(),
       });
-      toast.success("Şikayet gönderildi");
+      toast.success(t("reportSent"));
       onClose();
     } catch {
-      toast.error("Şikayet gönderilemedi");
+      toast.error(t("reportFailed"));
     } finally {
       setLoading(false);
     }
@@ -39,19 +41,19 @@ const ReportDialog = ({ open, onClose, reportedPostId, reportedUserId }: ReportD
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm" onClick={onClose}>
       <div className="bg-card border border-border rounded-xl p-6 w-full max-w-sm mx-4" onClick={(e) => e.stopPropagation()}>
-        <h3 className="text-lg font-display font-semibold text-foreground mb-4">Şikayet Et</h3>
+        <h3 className="text-lg font-display font-semibold text-foreground mb-4">{t("reportTitle")}</h3>
         <textarea
           value={reason}
           onChange={(e) => setReason(e.target.value)}
-          placeholder="Şikayet nedeninizi yazın..."
+          placeholder={t("reportPlaceholder")}
           className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none h-24"
         />
         <div className="flex gap-3 mt-4">
           <button onClick={onClose} className="flex-1 py-2 rounded-lg bg-secondary text-secondary-foreground font-display hover:bg-secondary/80 transition-colors">
-            İptal
+            {t("cancel")}
           </button>
           <button onClick={handleSubmit} disabled={loading || !reason.trim()} className="flex-1 py-2 rounded-lg bg-destructive text-destructive-foreground font-display hover:opacity-90 transition-opacity disabled:opacity-50">
-            Gönder
+            {t("send")}
           </button>
         </div>
       </div>
