@@ -2,31 +2,34 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { signUp } from "@/lib/auth";
 import { toast } from "sonner";
+import { useLanguage } from "@/hooks/useLanguage";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const Signup = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!username.trim() || !password.trim()) return;
     if (username.trim().length < 3) {
-      toast.error("Kullanıcı adı en az 3 karakter olmalı");
+      toast.error(t("usernameMin"));
       return;
     }
     if (password.length < 6) {
-      toast.error("Şifre en az 6 karakter olmalı");
+      toast.error(t("passwordMin"));
       return;
     }
     setLoading(true);
     try {
       await signUp(username.trim(), password);
-      toast.success("Hesap oluşturuldu!");
+      toast.success(t("accountCreated"));
       navigate("/home");
     } catch (err: any) {
-      toast.error(err.message || "Kayıt başarısız");
+      toast.error(err.message || t("signupFailed"));
     } finally {
       setLoading(false);
     }
@@ -34,6 +37,9 @@ const Signup = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background relative overflow-hidden">
+      <div className="absolute top-4 right-4 z-20">
+        <LanguageSwitcher />
+      </div>
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full bg-primary/10 blur-[120px] pointer-events-none" />
       
       <div className="relative z-10 w-full max-w-sm px-6">
@@ -42,12 +48,12 @@ const Signup = () => {
         </Link>
 
         <div className="bg-card rounded-xl p-6 border border-border">
-          <h2 className="text-xl font-display font-semibold text-foreground mb-6">Kayıt Ol</h2>
+          <h2 className="text-xl font-display font-semibold text-foreground mb-6">{t("signupTitle")}</h2>
           
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <input
               type="text"
-              placeholder="Kullanıcı adı"
+              placeholder={t("usernamePlaceholder")}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
@@ -55,7 +61,7 @@ const Signup = () => {
             />
             <input
               type="password"
-              placeholder="Şifre (en az 6 karakter)"
+              placeholder={t("passwordHint")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
@@ -66,13 +72,13 @@ const Signup = () => {
               disabled={loading}
               className="w-full py-3 rounded-lg bg-gradient-primary text-primary-foreground font-display font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              {loading ? "Kayıt yapılıyor..." : "Kayıt Ol"}
+              {loading ? t("signingUp") : t("signup")}
             </button>
           </form>
 
           <p className="text-muted-foreground text-sm text-center mt-4">
-            Zaten hesabın var mı?{" "}
-            <Link to="/login" className="text-primary hover:underline">Giriş Yap</Link>
+            {t("hasAccount")}{" "}
+            <Link to="/login" className="text-primary hover:underline">{t("login")}</Link>
           </p>
         </div>
       </div>

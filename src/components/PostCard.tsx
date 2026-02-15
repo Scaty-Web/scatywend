@@ -5,8 +5,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
-import { tr } from "date-fns/locale";
+import { tr, enUS } from "date-fns/locale";
 import ReportDialog from "./ReportDialog";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface PostCardProps {
   post: {
@@ -24,6 +25,7 @@ interface PostCardProps {
 
 const PostCard = ({ post, likeCount, isLiked, onRefresh }: PostCardProps) => {
   const { user } = useAuth();
+  const { lang, t } = useLanguage();
   const [reportOpen, setReportOpen] = useState(false);
   const isOwn = user?.id === post.user_id;
 
@@ -39,7 +41,7 @@ const PostCard = ({ post, likeCount, isLiked, onRefresh }: PostCardProps) => {
 
   const deletePost = async () => {
     await supabase.from("posts").delete().eq("id", post.id);
-    toast.success("Gönderi silindi");
+    toast.success(t("postDeleted"));
     onRefresh();
   };
 
@@ -64,7 +66,7 @@ const PostCard = ({ post, likeCount, isLiked, onRefresh }: PostCardProps) => {
             </Link>
             <span className="text-muted-foreground text-sm">@{post.profiles?.username}</span>
             <span className="text-muted-foreground text-xs">
-              · {formatDistanceToNow(new Date(post.created_at), { locale: tr, addSuffix: true })}
+              · {formatDistanceToNow(new Date(post.created_at), { locale: lang === "tr" ? tr : enUS, addSuffix: true })}
             </span>
           </div>
           {post.content && <p className="text-foreground mt-1 whitespace-pre-wrap break-words">{post.content}</p>}

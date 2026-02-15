@@ -3,9 +3,11 @@ import { Send, ImagePlus, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const CreatePost = ({ onCreated }: { onCreated: () => void }) => {
   const { user, profile } = useAuth();
+  const { t } = useLanguage();
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -16,7 +18,7 @@ const CreatePost = ({ onCreated }: { onCreated: () => void }) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("Resim en fazla 5MB olabilir");
+      toast.error(t("imageMaxSize"));
       return;
     }
     setImageFile(file);
@@ -32,7 +34,7 @@ const CreatePost = ({ onCreated }: { onCreated: () => void }) => {
   const handleSubmit = async () => {
     if ((!content.trim() && !imageFile) || !user) return;
     if (content.length > 500) {
-      toast.error("Gönderi en fazla 500 karakter olabilir");
+      toast.error(t("postMaxChar"));
       return;
     }
     setLoading(true);
@@ -58,7 +60,7 @@ const CreatePost = ({ onCreated }: { onCreated: () => void }) => {
       removeImage();
       onCreated();
     } catch {
-      toast.error("Gönderi paylaşılamadı");
+      toast.error(t("postFailed"));
     } finally {
       setLoading(false);
     }
@@ -78,7 +80,7 @@ const CreatePost = ({ onCreated }: { onCreated: () => void }) => {
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="Neler oluyor?"
+            placeholder={t("whatsHappening")}
             className="w-full bg-transparent text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[60px]"
             maxLength={500}
           />
@@ -104,7 +106,7 @@ const CreatePost = ({ onCreated }: { onCreated: () => void }) => {
               className="px-5 py-2 rounded-full bg-gradient-primary text-primary-foreground font-display font-semibold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2"
             >
               <Send size={14} />
-              Wendle
+              {t("wendle")}
             </button>
           </div>
         </div>

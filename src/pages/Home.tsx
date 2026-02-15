@@ -4,9 +4,11 @@ import { useAuth } from "@/hooks/useAuth";
 import AppLayout from "@/components/AppLayout";
 import CreatePost from "@/components/CreatePost";
 import PostCard from "@/components/PostCard";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const Home = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [posts, setPosts] = useState<any[]>([]);
   const [likes, setLikes] = useState<any[]>([]);
 
@@ -28,7 +30,6 @@ const Home = () => {
     fetchPosts();
   }, [fetchPosts]);
 
-  // Realtime
   useEffect(() => {
     const channel = supabase
       .channel("posts-feed")
@@ -36,11 +37,9 @@ const Home = () => {
         fetchPosts();
       })
       .subscribe();
-
     return () => { supabase.removeChannel(channel); };
   }, [fetchPosts]);
 
-  // Count likes per post
   const [allLikes, setAllLikes] = useState<any[]>([]);
   useEffect(() => {
     supabase.from("likes").select("*").then(({ data }) => setAllLikes(data || []));
@@ -49,7 +48,7 @@ const Home = () => {
   return (
     <AppLayout>
       <div className="border-b border-border p-4">
-        <h1 className="text-xl font-display font-bold text-foreground">Ana Sayfa</h1>
+        <h1 className="text-xl font-display font-bold text-foreground">{t("homeTitle")}</h1>
       </div>
       <CreatePost onCreated={fetchPosts} />
       <div>
@@ -64,7 +63,7 @@ const Home = () => {
         ))}
         {posts.length === 0 && (
           <div className="p-8 text-center text-muted-foreground">
-            Henüz gönderi yok. İlk wendle'ı sen paylaş!
+            {t("noPosts")}
           </div>
         )}
       </div>

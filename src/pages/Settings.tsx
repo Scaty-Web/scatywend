@@ -6,10 +6,12 @@ import { supabase } from "@/integrations/supabase/client";
 import AppLayout from "@/components/AppLayout";
 import { toast } from "sonner";
 import { AlertTriangle, Camera } from "lucide-react";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const Settings = () => {
   const { profile, user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [displayName, setDisplayName] = useState(profile?.display_name || "");
   const [bio, setBio] = useState(profile?.bio || "");
   const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url || "");
@@ -23,28 +25,23 @@ const Settings = () => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
     if (file.size > 2 * 1024 * 1024) {
-      toast.error("Profil resmi en fazla 2MB olabilir");
+      toast.error(t("avatarMaxSize"));
       return;
     }
     setUploadingAvatar(true);
     try {
       const ext = file.name.split(".").pop();
       const path = `${user.id}/avatar.${ext}`;
-      
-      // Delete old avatar if exists
       await supabase.storage.from("avatars").remove([path]);
-      
       const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
       if (error) throw error;
-      
       const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path);
       const newUrl = `${urlData.publicUrl}?t=${Date.now()}`;
       setAvatarUrl(newUrl);
-      
       await supabase.from("profiles").update({ avatar_url: newUrl }).eq("id", user.id);
-      toast.success("Profil resmi güncellendi");
+      toast.success(t("avatarUpdated"));
     } catch {
-      toast.error("Yükleme başarısız");
+      toast.error(t("avatarUploadFailed"));
     } finally {
       setUploadingAvatar(false);
     }
@@ -58,9 +55,9 @@ const Settings = () => {
         display_name: displayName.trim() || profile.username,
         bio: bio.trim(),
       }).eq("id", profile.id);
-      toast.success("Profil güncellendi");
+      toast.success(t("profileUpdated"));
     } catch {
-      toast.error("Güncellenemedi");
+      toast.error(t("updateFailed"));
     } finally {
       setSaving(false);
     }
@@ -72,7 +69,7 @@ const Settings = () => {
       await deleteAccount();
       navigate("/");
     } catch (err: any) {
-      toast.error(err.message || "Hesap silinemedi");
+      toast.error(err.message || t("deleteFailed"));
       setDeleting(false);
     }
   };
@@ -80,15 +77,13 @@ const Settings = () => {
   return (
     <AppLayout>
       <div className="border-b border-border p-4">
-        <h1 className="text-xl font-display font-bold text-foreground">Hesap Ayarları</h1>
+        <h1 className="text-xl font-display font-bold text-foreground">{t("accountSettings")}</h1>
       </div>
 
       <div className="p-6 space-y-6">
-        {/* Profile section */}
         <div className="bg-card rounded-xl border border-border p-6 space-y-4">
-          <h2 className="text-lg font-display font-semibold text-foreground">Profil Bilgileri</h2>
+          <h2 className="text-lg font-display font-semibold text-foreground">{t("profileInfo")}</h2>
 
-          {/* Avatar upload */}
           <div className="flex items-center gap-4">
             <div className="relative group cursor-pointer" onClick={() => fileRef.current?.click()}>
               {avatarUrl ? (
@@ -104,49 +99,48 @@ const Settings = () => {
               <input ref={fileRef} type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
             </div>
             <div className="text-sm text-muted-foreground">
-              {uploadingAvatar ? "Yükleniyor..." : "Profil resmini değiştirmek için tıklayın"}
+              {uploadingAvatar ? t("uploading") : t("changeAvatar")}
             </div>
           </div>
           
           <div>
-            <label className="text-sm text-muted-foreground mb-1 block">Kullanıcı Adı</label>
+            <label className="text-sm text-muted-foreground mb-1 block">{t("usernameLabel")}</label>
             <input type="text" value={profile?.username || ""} disabled className="w-full px-4 py-3 rounded-lg bg-muted border border-border text-muted-foreground cursor-not-allowed" />
           </div>
 
           <div>
-            <label className="text-sm text-muted-foreground mb-1 block">Görünen Ad</label>
+            <label className="text-sm text-muted-foreground mb-1 block">{t("displayNameLabel")}</label>
             <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
           </div>
 
           <div>
-            <label className="text-sm text-muted-foreground mb-1 block">Biyografi</label>
+            <label className="text-sm text-muted-foreground mb-1 block">{t("bioLabel")}</label>
             <textarea value={bio} onChange={(e) => setBio(e.target.value)} className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none h-24" maxLength={160} />
           </div>
 
           <button onClick={handleSave} disabled={saving} className="px-6 py-2 rounded-lg bg-gradient-primary text-primary-foreground font-display font-semibold hover:opacity-90 transition-opacity disabled:opacity-50">
-            {saving ? "Kaydediliyor..." : "Kaydet"}
+            {saving ? t("saving") : t("save")}
           </button>
         </div>
 
-        {/* Danger zone */}
         <div className="bg-card rounded-xl border border-destructive/30 p-6 space-y-4">
           <div className="flex items-center gap-2">
             <AlertTriangle className="text-destructive" size={20} />
-            <h2 className="text-lg font-display font-semibold text-destructive">Tehlike Bölgesi</h2>
+            <h2 className="text-lg font-display font-semibold text-destructive">{t("dangerZone")}</h2>
           </div>
-          <p className="text-muted-foreground text-sm">Hesabınızı sildiğinizde tüm verileriniz kalıcı olarak silinir. Bu işlem geri alınamaz.</p>
+          <p className="text-muted-foreground text-sm">{t("dangerDesc")}</p>
 
           {!confirmDelete ? (
             <button onClick={() => setConfirmDelete(true)} className="px-6 py-2 rounded-lg border border-destructive text-destructive font-display font-semibold hover:bg-destructive hover:text-destructive-foreground transition-colors">
-              Hesabımı Sil
+              {t("deleteAccount")}
             </button>
           ) : (
             <div className="flex items-center gap-3">
               <button onClick={handleDelete} disabled={deleting} className="px-6 py-2 rounded-lg bg-destructive text-destructive-foreground font-display font-semibold hover:opacity-90 transition-opacity disabled:opacity-50">
-                {deleting ? "Siliniyor..." : "Evet, Sil"}
+                {deleting ? t("deleting") : t("confirmDelete")}
               </button>
               <button onClick={() => setConfirmDelete(false)} className="px-6 py-2 rounded-lg bg-secondary text-secondary-foreground font-display hover:bg-secondary/80 transition-colors">
-                İptal
+                {t("cancel")}
               </button>
             </div>
           )}
