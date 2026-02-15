@@ -26,6 +26,8 @@ const translations = {
     accountCreated: "Hesap oluşturuldu!",
     signupFailed: "Kayıt başarısız",
     usernameMin: "Kullanıcı adı en az 3 karakter olmalı",
+    usernameFormat: "Kullanıcı adı 3-30 karakter, sadece harf, rakam ve alt çizgi olmalı",
+    usernameReserved: "Bu kullanıcı adı kullanılamaz",
     passwordMin: "Şifre en az 6 karakter olmalı",
 
     // Sidebar
@@ -113,6 +115,8 @@ const translations = {
     accountCreated: "Account created!",
     signupFailed: "Sign up failed",
     usernameMin: "Username must be at least 3 characters",
+    usernameFormat: "Username must be 3-30 characters, alphanumeric and underscore only",
+    usernameReserved: "This username is reserved",
     passwordMin: "Password must be at least 6 characters",
 
     home: "Home",

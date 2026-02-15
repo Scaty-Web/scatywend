@@ -12,11 +12,18 @@ const Signup = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
 
+  const USERNAME_REGEX = /^[a-zA-Z0-9_]{3,30}$/;
+  const RESERVED_USERNAMES = ['admin', 'system', 'support', 'help', 'moderator', 'mod', 'root'];
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!username.trim() || !password.trim()) return;
-    if (username.trim().length < 3) {
-      toast.error(t("usernameMin"));
+    if (!USERNAME_REGEX.test(username.trim())) {
+      toast.error(t("usernameFormat"));
+      return;
+    }
+    if (RESERVED_USERNAMES.includes(username.trim().toLowerCase())) {
+      toast.error(t("usernameReserved"));
       return;
     }
     if (password.length < 6) {
