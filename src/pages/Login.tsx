@@ -20,7 +20,7 @@ const Login = () => {
       await signIn(username.trim(), password);
       navigate("/home");
     } catch (err: any) {
-      toast.error(err.message || t("loginFailed"));
+      toast.error(t("loginFailed"));
     } finally {
       setLoading(false);
     }

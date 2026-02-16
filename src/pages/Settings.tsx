@@ -69,7 +69,7 @@ const Settings = () => {
       await deleteAccount();
       navigate("/");
     } catch (err: any) {
-      toast.error(err.message || t("deleteFailed"));
+      toast.error(t("deleteFailed"));
       setDeleting(false);
     }
   };
