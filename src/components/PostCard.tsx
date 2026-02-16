@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Trash2, Flag } from "lucide-react";
+import { Heart, Trash2, Flag, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { tr, enUS } from "date-fns/locale";
 import ReportDialog from "./ReportDialog";
+import CommentsSection from "./CommentsSection";
 import { useLanguage } from "@/hooks/useLanguage";
 
 interface PostCardProps {
@@ -20,13 +21,15 @@ interface PostCardProps {
   };
   likeCount: number;
   isLiked: boolean;
+  commentCount: number;
   onRefresh: () => void;
 }
 
-const PostCard = ({ post, likeCount, isLiked, onRefresh }: PostCardProps) => {
+const PostCard = ({ post, likeCount, isLiked, commentCount, onRefresh }: PostCardProps) => {
   const { user } = useAuth();
   const { lang, t } = useLanguage();
   const [reportOpen, setReportOpen] = useState(false);
+  const [commentsOpen, setCommentsOpen] = useState(false);
   const isOwn = user?.id === post.user_id;
 
   const toggleLike = async () => {
@@ -78,6 +81,10 @@ const PostCard = ({ post, likeCount, isLiked, onRefresh }: PostCardProps) => {
               <Heart size={16} fill={isLiked ? "currentColor" : "none"} />
               {likeCount > 0 && likeCount}
             </button>
+            <button onClick={() => setCommentsOpen(!commentsOpen)} className={`flex items-center gap-1 text-sm transition-colors ${commentsOpen ? "text-primary" : "text-muted-foreground hover:text-primary"}`}>
+              <MessageCircle size={16} />
+              {commentCount > 0 && commentCount}
+            </button>
             {isOwn && (
               <button onClick={deletePost} className="text-muted-foreground hover:text-destructive transition-colors">
                 <Trash2 size={16} />
@@ -89,6 +96,7 @@ const PostCard = ({ post, likeCount, isLiked, onRefresh }: PostCardProps) => {
               </button>
             )}
           </div>
+          {commentsOpen && <CommentsSection postId={post.id} />}
         </div>
       </div>
       {reportOpen && (
