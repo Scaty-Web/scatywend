@@ -16,6 +16,7 @@ const Profile = () => {
   const [posts, setPosts] = useState<any[]>([]);
   const [likes, setLikes] = useState<any[]>([]);
   const [allLikes, setAllLikes] = useState<any[]>([]);
+  const [allComments, setAllComments] = useState<any[]>([]);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
@@ -51,6 +52,8 @@ const Profile = () => {
     if (postIds.length > 0) {
       const { data: al } = await supabase.from("likes").select("*").in("post_id", postIds);
       setAllLikes(al || []);
+      const { data: ac } = await supabase.from("comments").select("id, post_id").in("post_id", postIds);
+      setAllComments(ac || []);
     }
   }, [username, user]);
 
@@ -127,6 +130,7 @@ const Profile = () => {
           post={post}
           likeCount={allLikes.filter((l) => l.post_id === post.id).length}
           isLiked={likes.some((l) => l.post_id === post.id)}
+          commentCount={allComments.filter((c) => c.post_id === post.id).length}
           onRefresh={fetchData}
         />
       ))}

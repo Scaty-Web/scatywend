@@ -49,6 +49,13 @@ const translations = {
 
     // Post Card
     postDeleted: "Gönderi silindi",
+    comments: "Yorumlar",
+    writeComment: "Yorum yaz...",
+    reply: "Yanıtla",
+    replies: "yanıt",
+    replyingTo: "Yanıtlanıyor:",
+    commentFailed: "Yorum gönderilemedi",
+    commentDeleted: "Yorum silindi",
 
     // Profile
     userNotFound: "Kullanıcı bulunamadı",
@@ -134,6 +141,13 @@ const translations = {
     imageMaxSize: "Image can be max 5MB",
 
     postDeleted: "Post deleted",
+    comments: "Comments",
+    writeComment: "Write a comment...",
+    reply: "Reply",
+    replies: "replies",
+    replyingTo: "Replying to:",
+    commentFailed: "Failed to send comment",
+    commentDeleted: "Comment deleted",
 
     userNotFound: "User not found",
     follow: "Follow",

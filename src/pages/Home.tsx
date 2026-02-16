@@ -41,8 +41,10 @@ const Home = () => {
   }, [fetchPosts]);
 
   const [allLikes, setAllLikes] = useState<any[]>([]);
+  const [allComments, setAllComments] = useState<any[]>([]);
   useEffect(() => {
     supabase.from("likes").select("*").then(({ data }) => setAllLikes(data || []));
+    supabase.from("comments").select("id, post_id").then(({ data }) => setAllComments(data || []));
   }, [posts]);
 
   return (
@@ -58,6 +60,7 @@ const Home = () => {
             post={post}
             likeCount={allLikes.filter((l) => l.post_id === post.id).length}
             isLiked={likes.some((l) => l.post_id === post.id)}
+            commentCount={allComments.filter((c) => c.post_id === post.id).length}
             onRefresh={fetchPosts}
           />
         ))}
